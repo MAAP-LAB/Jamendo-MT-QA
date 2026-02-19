@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamendo-MT-QA: A Benchmark for Multi-Track Comparative Music Question Answering</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --bg: #ffffff;
+    --bg-alt: #f8fafc;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --accent: #7c3aed;
+    --green: #059669;
+    --orange: #d97706;
+    --radius: 10px;
+    --max-width: 960px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.7;
+    background: var(--bg);
+  }
+
+  /* ---- Navigation ---- */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.5rem;
+  }
+  nav .logo {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+  }
+  nav .links a {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-left: 1.2rem;
+    transition: color 0.2s;
+  }
+  nav .links a:hover { color: var(--primary); }
+
+  /* ---- Sections ---- */
+  section { padding: 4rem 1.5rem; }
+  .container { max-width: var(--max-width); margin: 0 auto; }
+  .alt-bg { background: var(--bg-alt); }
+
+  /* ---- Hero ---- */
+  .hero {
+    text-align: center;
+    padding: 5rem 1.5rem 3.5rem;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 0.6rem;
+  }
+  .hero h1 span { color: var(--primary); }
+  .hero .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero .authors {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.8rem;
+  }
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.3rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-outline { border: 1.5px solid var(--border); color: var(--text); background: #fff; }
+
+  /* ---- Section headings ---- */
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .section-desc {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  /* ---- Abstract ---- */
+  .abstract-text {
+    font-size: 1.02rem;
+    line-height: 1.85;
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: justify;
+  }
+
+  /* ---- Stats cards ---- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.8rem 1.2rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+  }
+
+  /* ---- Example tabs ---- */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+  }
+  .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .example-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .example-pair {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .track-tag {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .track-a { background: #dbeafe; color: #1d4ed8; }
+  .track-b { background: #fce7f3; color: #be185d; }
+  .example-q, .example-r, .example-a {
+    margin-bottom: 0.8rem;
+  }
+  .example-q strong, .example-r strong, .example-a strong {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .example-q p { font-size: 0.95rem; }
+  .example-r p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; }
+  .example-a p { font-size: 0.95rem; font-weight: 600; color: var(--green); }
+
+  /* ---- Leaderboard ---- */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead { background: var(--bg-alt); }
+  th, td {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-secondary); }
+  tbody tr:hover { background: #f1f5f9; }
+  .type-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .type-cap { background: #fef3c7; color: #92400e; }
+  .type-multi { background: #d1fae5; color: #065f46; }
+  .best { font-weight: 700; color: var(--primary); }
+
+  /* ---- Pipeline ---- */
+  .pipeline-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .pipeline-step {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.3rem;
+    position: relative;
+  }
+  .pipeline-step .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .pipeline-step h4 { font-size: 0.92rem; margin-bottom: 0.3rem; }
+  .pipeline-step p { font-size: 0.82rem; color: var(--text-secondary); }
+
+  /* ---- Citation ---- */
+  .citation-block {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background: #334155;
+    color: #e2e8f0;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: #475569; }
+
+  /* ---- Footer ---- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+  footer a { color: var(--primary); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6rem; }
+    section { padding: 2.5rem 1rem; }
+    .stat-number { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="inner">
+    <div class="logo">Jamendo-MT-QA</div>
+    <div class="links">
+      <a href="#abstract">Abstract</a>
+      <a href="#stats">Dataset</a>
+      <a href="#examples">Examples</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#citation">Citation</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="badge">ACL ARR 2025</div>
+    <h1><span>Jamendo-MT-QA</span>: A Benchmark for<br>Multi-Track Comparative Music Question Answering</h1>
+    <p class="subtitle">A large-scale dataset of 36,519 comparative QA items over 12,173 track pairs for evaluating music understanding models</p>
+    <p class="authors">Anonymous ACL ARR Submission</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="https://huggingface.co/datasets/m-a-a-p/Jamendo-MT-QA" target="_blank">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Dataset
+      </a>
+      <a class="btn btn-outline" href="https://github.com/m-a-a-p/Jamendo-MT-QA" target="_blank">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12 24 5.37 18.63 0 12 0z"/></svg>
+        Code
+      </a>
+      <a class="btn btn-outline" href="#citation">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Paper
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract -->
+<section id="abstract" class="alt-bg">
+  <div class="container">
+    <h2 class="section-title">Abstract</h2>
+    <p class="abstract-text">
+      Recent work on music question answering (Music-QA) has primarily focused on single-track understanding, where models answer questions about an individual audio clip using its tags, captions, or metadata. However, listeners often describe music in comparative terms, and existing benchmarks do not systematically evaluate reasoning across multiple tracks. Building on the Jamendo-QA dataset, we introduce <strong>Jamendo-MT-QA</strong>, a dataset and benchmark for multi-track comparative question answering. From Creative Commons-licensed tracks on Jamendo, we construct <strong>36,519 comparative QA items</strong> over <strong>12,173 track pairs</strong>, with each pair yielding three question types: yes/no, short-answer, and sentence-level questions. We describe an LLM-assisted pipeline for generating and filtering comparative questions, and benchmark representative audio&ndash;language models using both automatic metrics and LLM-as-a-Judge evaluation.
+    </p>
+  </div>
+</section>
+
+<!-- Key Statistics -->
+<section id="stats">
+  <div class="container">
+    <h2 class="section-title">Dataset at a Glance</h2>
+    <p class="section-desc">Jamendo-MT-QA is the first large-scale benchmark specifically designed for multi-track comparative music reasoning.</p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">36,519</div>
+        <div class="stat-label">QA Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">12,173</div>
+        <div class="stat-label">Track Pairs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">7,061</div>
+        <div class="stat-label">Unique Tracks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">56</div>
+        <div class="stat-label">Genres Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section class="alt-bg" id="pipeline">
+  <div class="container">
+    <h2 class="section-title">Data Construction Pipeline</h2>
+    <p class="section-desc">An LLM-assisted four-stage pipeline for generating high-quality comparative QA pairs.</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <div class="step-num">1</div>
+        <h4>Caption Generation</h4>
+        <p>Generate rich captions for each track using Music Flamingo, capturing genre, tempo, instrumentation, mood, and production details.</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">2</div>
+        <h4>Single-Track QA</h4>
+        <p>Produce per-track question&ndash;answer pairs from Jamendo-QA as building blocks for comparative questions.</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">3</div>
+        <h4>Comparative QA Generation</h4>
+        <p>GPT-5-mini generates three comparative questions (yes/no, short-answer, sentence) per track pair with step-by-step reasoning.</p>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-num">4</div>
+        <h4>Quality Filtering</h4>
+        <p>Human evaluation + LLM-as-a-Judge to retain only items with perfect semantic scores (5/5/5), yielding 92.9% of original pairs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dataset Examples -->
+<section id="examples">
+  <div class="container">
+    <h2 class="section-title">Dataset Examples</h2>
+    <p class="section-desc">Each track pair produces three types of comparative questions with step-by-step reasoning.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="yesno">Yes / No</button>
+      <button class="tab-btn" data-tab="short">Short Answer</button>
+      <button class="tab-btn" data-tab="sentence">Sentence-Level</button>
+    </div>
+
+    <!-- Yes/No -->
+    <div class="tab-panel active" id="tab-yesno">
+      <div class="example-card">
+        <div class="example-pair">
+          <span class="track-tag track-a">rnb_10Days</span>
+          <span class="track-tag track-b">electronic_CrawlBack</span>
+        </div>
+        <div class="example-q">
+          <strong>Question</strong>
+          <p>Is the tempo of electronic_CrawlBack more than twice the tempo of rnb_10Days?</p>
+        </div>
+        <div class="example-r">
+          <strong>Reasoning</strong>
+          <p>Step 1: rnb_10Days is approximately 83 BPM. Step 2: electronic_CrawlBack is 150 BPM. Step 3: Twice rnb_10Days's tempo is 166 BPM (83 &times; 2). Step 4: 150 BPM is less than 166 BPM, so electronic_CrawlBack is not more than twice the tempo of rnb_10Days.</p>
+        </div>
+        <div class="example-a">
+          <strong>Answer</strong>
+          <p>No</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Short Answer -->
+    <div class="tab-panel" id="tab-short">
+      <div class="example-card">
+        <div class="example-pair">
+          <span class="track-tag track-a">indie_AboveandBelow</span>
+          <span class="track-tag track-b">guitar_FutureofTears</span>
+        </div>
+        <div class="example-q">
+          <strong>Question</strong>
+          <p>Which track has the faster tempo?</p>
+        </div>
+        <div class="example-r">
+          <strong>Reasoning</strong>
+          <p>Step 1: Note track 1 tempo is 81 BPM. Step 2: Note track 2 tempo is 150 BPM. Step 3: Compare numeric BPM values: 150 BPM is greater than 81 BPM, so the faster track is the one at 150 BPM.</p>
+        </div>
+        <div class="example-a">
+          <strong>Answer</strong>
+          <p>guitar_FutureofTears</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentence-Level -->
+    <div class="tab-panel" id="tab-sentence">
+      <div class="example-card">
+        <div class="example-pair">
+          <span class="track-tag track-a">folk_Standout</span>
+          <span class="track-tag track-b">electronic_RestAssured</span>
+        </div>
+        <div class="example-q">
+          <strong>Question</strong>
+          <p>In one sentence, how do the two tracks differ in genre, energy, and production approach?</p>
+        </div>
+        <div class="example-r">
+          <strong>Reasoning</strong>
+          <p>Step 1: Identify folk_Standout as laid-back Reggae/Dub with warm, spacious production. Step 2: Identify electronic_RestAssured as high-energy Electro-Industrial/EBM with aggressive synths and tight compression. Step 3: Contrast energy (laid-back vs high-energy), genre (organic reggae/dub vs electronic industrial/EBM), and production (warm delays/reverbs vs aggressive compression and distortion).</p>
+        </div>
+        <div class="example-a">
+          <strong>Answer</strong>
+          <p>folk_Standout is a laid-back Reggae/Dub track with warm, spacious production and mellow one-drop grooves, whereas electronic_RestAssured is a high-energy Electro-Industrial/EBM track built around aggressive synths, tight compression, and a relentless dance-floor drive.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Leaderboard -->
+<section id="leaderboard" class="alt-bg">
+  <div class="container">
+    <h2 class="section-title">Baseline Leaderboard</h2>
+    <p class="section-desc">Results on the subset of 2,010 track pairs. Models evaluated under two paradigms: caption-based (Cap) and multi-audio (Multi).</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Type</th>
+            <th>Yes/No Acc.</th>
+            <th>Short Acc.</th>
+            <th>BLEU</th>
+            <th>ROUGE-1</th>
+            <th>ROUGE-2</th>
+            <th>ROUGE-L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Music Flamingo</strong></td>
+            <td><span class="type-badge type-cap">Cap</span></td>
+            <td class="best">82.1%</td>
+            <td class="best">88.1%</td>
+            <td class="best">2.06</td>
+            <td class="best">25.3</td>
+            <td class="best">5.9</td>
+            <td class="best">19.6</td>
+          </tr>
+          <tr>
+            <td>GPT-4o-mini Audio</td>
+            <td><span class="type-badge type-multi">Multi</span></td>
+            <td>77.3%</td>
+            <td>73.2%</td>
+            <td>0.87</td>
+            <td>17.8</td>
+            <td>2.7</td>
+            <td>14.7</td>
+          </tr>
+          <tr>
+            <td>GPT-4o Audio</td>
+            <td><span class="type-badge type-multi">Multi</span></td>
+            <td>69.6%</td>
+            <td>84.4%</td>
+            <td>1.04</td>
+            <td>20.0</td>
+            <td>3.6</td>
+            <td>16.7</td>
+          </tr>
+          <tr>
+            <td>Qwen3-Omni</td>
+            <td><span class="type-badge type-multi">Multi</span></td>
+            <td>59.7%</td>
+            <td>75.5%</td>
+            <td>1.22</td>
+            <td>19.9</td>
+            <td>3.9</td>
+            <td>16.0</td>
+          </tr>
+          <tr>
+            <td>Qwen2-Audio</td>
+            <td><span class="type-badge type-multi">Multi</span></td>
+            <td>34.4%</td>
+            <td>77.7%</td>
+            <td>0.57</td>
+            <td>14.3</td>
+            <td>1.4</td>
+            <td>11.3</td>
+          </tr>
+          <tr>
+            <td>Qwen2-Audio</td>
+            <td><span class="type-badge type-cap">Cap</span></td>
+            <td>26.9%</td>
+            <td>55.5%</td>
+            <td>0.58</td>
+            <td>15.3</td>
+            <td>1.6</td>
+            <td>12.1</td>
+          </tr>
+          <tr>
+            <td>MU-LLaMA</td>
+            <td><span class="type-badge type-cap">Cap</span></td>
+            <td>23.6%</td>
+            <td>50.5%</td>
+            <td>0.68</td>
+            <td>16.1</td>
+            <td>1.9</td>
+            <td>13.3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem; font-size:0.82rem; color:var(--text-secondary);">
+      <strong>Key finding:</strong> Caption-based Music Flamingo achieves the strongest overall performance, suggesting that high-quality intermediate representations are more important than direct multi-audio access for comparative reasoning.
+    </p>
+  </div>
+</section>
+
+<!-- Error Analysis -->
+<section id="error-analysis">
+  <div class="container">
+    <h2 class="section-title">Error Analysis</h2>
+    <p class="section-desc">Dominant error types on incorrectly answered sentence-level questions (LLM judge score &lt; 3).</p>
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+      <div class="stat-card" style="text-align:left;">
+        <h4 style="color:var(--primary); margin-bottom:0.6rem;">Comparative Collapse</h4>
+        <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:0.8rem;">Model avoids explicit comparison and produces a generic summary of both tracks.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; font-size:0.82rem;">
+          <span>Music Flamingo <strong>35.3%</strong></span>
+          <span>GPT-4o <strong>56.7%</strong></span>
+          <span>Qwen3-Omni <strong>23.4%</strong></span>
+        </div>
+      </div>
+      <div class="stat-card" style="text-align:left;">
+        <h4 style="color:var(--orange); margin-bottom:0.6rem;">Attribute Hallucination</h4>
+        <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:0.8rem;">Model introduces musical attributes not supported by the audio or captions.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; font-size:0.82rem;">
+          <span>Music Flamingo <strong>64.0%</strong></span>
+          <span>GPT-4o <strong>35.3%</strong></span>
+          <span>Qwen3-Omni <strong>75.9%</strong></span>
+        </div>
+      </div>
+      <div class="stat-card" style="text-align:left;">
+        <h4 style="color:var(--green); margin-bottom:0.6rem;">Granularity Mismatch</h4>
+        <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:0.8rem;">Comparison is too coarse or too fine-grained relative to the question intent.</p>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; font-size:0.82rem;">
+          <span>Music Flamingo <strong>0.7%</strong></span>
+          <span>GPT-4o <strong>8.0%</strong></span>
+          <span>Qwen3-Omni <strong>0.7%</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Citation -->
+<section id="citation" class="alt-bg">
+  <div class="container">
+    <h2 class="section-title">Citation</h2>
+    <p class="section-desc">If you use Jamendo-MT-QA in your research, please cite our paper.</p>
+    <div class="citation-block">
+      <button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>
+<pre id="bibtex">@inproceedings{jamendo-mt-qa-2025,
+  title     = {Jamendo-MT-QA: A Benchmark for Multi-Track
+               Comparative Music Question Answering},
+  author    = {Anonymous},
+  booktitle = {Proceedings of the Association for Computational
+               Linguistics (ACL)},
+  year      = {2025},
+  note      = {Under review at ACL ARR 2025}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    <a href="https://huggingface.co/datasets/m-a-a-p/Jamendo-MT-QA">Dataset</a> &nbsp;&middot;&nbsp;
+    <a href="https://github.com/m-a-a-p/Jamendo-MT-QA">Code</a> &nbsp;&middot;&nbsp;
+    <a href="#">Paper (Coming Soon)</a>
+  </p>
+  <p style="margin-top:0.5rem;">Jamendo-MT-QA &copy; 2025. Built with Creative Commons-licensed audio from Jamendo.</p>
+</footer>
+
+<script>
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// Copy BibTeX
+function copyBib() {
+  const text = document.getElementById('bibtex').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+  });
+}
+</script>
+
+</body>
+</html>
