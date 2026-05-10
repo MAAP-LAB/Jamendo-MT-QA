@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+*_venv/
+
+# Env files
+.env
+.env.*
+
+# OS
+.DS_Store
+
+# Data + outputs (downloaded / generated locally)
+data/
+predictions/
+eval_results/
+*.parquet
+
+# Paper / research artifacts (not part of the public benchmark release)
+1955_Jamendo_MT_QA_A_Benchmark.pdf
+EVALUATION_ANALYSIS.md
+cli.py
+project_paths.py
+analysis/
+archive/
+baseline_inference/
+datasets/
+docs/legacy/
+eval_full_5scale/
+Final_result/
+human_eval/
+Jamendo_Multi_Track_QA_Benchmark/
+logs/
+results/
+scripts/

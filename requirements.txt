@@ -1,0 +1,19 @@
+# Core
+huggingface_hub>=0.24
+datasets>=2.18
+tqdm
+
+# Optional — comparator / LLM-as-a-Judge (cap mode + evaluate.py --judge)
+openai>=1.40
+anthropic>=0.34
+
+# Optional — sentence-level metrics
+sacrebleu>=2.4
+rouge-score>=0.1.2
+bert-score>=0.3.13   # only needed if you pass `--bertscore` to evaluate.py
+
+# Optional — example adapter for Qwen2-Audio
+# transformers>=4.45
+# torch>=2.1
+# torchaudio
+# librosa
